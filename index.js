@@ -14,9 +14,8 @@ app.use(
   }),
 )
 
-// écoute de l'url
 app.get('/api/movies', (req, res) => {
-  // connection à la base de données, et sélection des employés
+  // connection à la base de données, et sélection
   connection.query(
     'SELECT * from movie ORDER BY name ASC',
     (err, results) => {
@@ -33,9 +32,8 @@ app.get('/api/movies', (req, res) => {
   )
 })
 
-// écoute de l'url
 app.get('/api/movies-date', (req, res) => {
-  // connection à la base de données, et sélection des employés
+  // connection à la base de données, et sélection
   connection.query(
     'SELECT name, DATE_FORMAT(release_date, "%d/%m/%Y") AS release_date FROM movie',
     (err, results) => {
@@ -52,7 +50,6 @@ app.get('/api/movies-date', (req, res) => {
   )
 })
 
-// écoute de l'url
 app.get('/api/movies-active', (req, res) => {
   // connection à la base de données, et sélection des employés
   connection.query(
@@ -72,7 +69,7 @@ app.get('/api/movies-active', (req, res) => {
 })
 
 app.get('/api/movies/names', (req, res) => {
-  // connection à la base de données, et sélection des employés
+  // connection à la base de données, et sélection
   connection.query('SELECT name from movie', (err, results) => {
     if (err) {
       // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
@@ -84,7 +81,20 @@ app.get('/api/movies/names', (req, res) => {
   })
 })
 
-// écoute de l'url "/api/employees" avec le verbe POST
+app.get('/api/movies/filter/between', (req, res) => {
+  connection.query(
+    'SELECT * FROM movie WHERE release_date BETWEEN "2000-02-01" AND "2012-01-01"',
+    (err, results) => {
+      if (err) {
+        res.status(500).send('Erreur lors de la récupération')
+      } else {
+        res.json(results)
+      }
+    },
+  )
+})
+
+// écoute de l'url avec le verbe POST
 app.post('/api/movies', (req, res) => {
   // récupération des données envoyées
   const formData = req.body
