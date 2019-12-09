@@ -14,18 +14,61 @@ app.use(
   }),
 )
 
-// écoute de l'url "/api/employees"
+// écoute de l'url
 app.get('/api/movies', (req, res) => {
   // connection à la base de données, et sélection des employés
-  connection.query('SELECT * from movie', (err, results) => {
-    if (err) {
-      // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
-      res.status(500).send('Erreur lors de la récupération des films')
-    } else {
-      // Si tout s'est bien passé, on envoie le résultat de la requête SQL en tant que JSON.
-      res.json(results)
-    }
-  })
+  connection.query(
+    'SELECT * from movie ORDER BY name ASC',
+    (err, results) => {
+      if (err) {
+        // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
+        res
+          .status(500)
+          .send('Erreur lors de la récupération des films')
+      } else {
+        // Si tout s'est bien passé, on envoie le résultat de la requête SQL en tant que JSON.
+        res.json(results)
+      }
+    },
+  )
+})
+
+// écoute de l'url
+app.get('/api/movies-date', (req, res) => {
+  // connection à la base de données, et sélection des employés
+  connection.query(
+    'SELECT name, DATE_FORMAT(release_date, "%d/%m/%Y") AS release_date FROM movie',
+    (err, results) => {
+      if (err) {
+        // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
+        res
+          .status(500)
+          .send('Erreur lors de la récupération des films')
+      } else {
+        // Si tout s'est bien passé, on envoie le résultat de la requête SQL en tant que JSON.
+        res.json(results)
+      }
+    },
+  )
+})
+
+// écoute de l'url
+app.get('/api/movies-active', (req, res) => {
+  // connection à la base de données, et sélection des employés
+  connection.query(
+    'SELECT name, active FROM movie WHERE active',
+    (err, results) => {
+      if (err) {
+        // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
+        res
+          .status(500)
+          .send('Erreur lors de la récupération des films')
+      } else {
+        // Si tout s'est bien passé, on envoie le résultat de la requête SQL en tant que JSON.
+        res.json(results)
+      }
+    },
+  )
 })
 
 app.get('/api/movies/names', (req, res) => {
@@ -88,6 +131,47 @@ app.put('/api/movies/:id', (req, res) => {
       }
     },
   )
+})
+
+// écoute de l'url "/api/movies"
+app.delete('/api/movies/:id', (req, res) => {
+  // récupération des données envoyées
+  const idMovie = req.params.id
+
+  // connexion à la base de données, et suppression d'un film'
+  connection.query(
+    'DELETE FROM movie WHERE id = ?',
+    [idMovie],
+    err => {
+      if (err) {
+        // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
+        console.log(err)
+        res
+          .status(500)
+          .send("Erreur lors de la suppression d'un film")
+      } else {
+        // Si tout s'est bien passé, on envoie un statut "ok".
+        res.sendStatus(200)
+      }
+    },
+  )
+})
+
+// écoute de l'url "/api/movies"
+app.delete('/api/movies/delete-noactive', res => {
+  // connexion à la base de données, et suppression d'un film'
+  connection.query('DELETE FROM movie WHERE active = 0', err => {
+    if (err) {
+      // Si une erreur est survenue, alors on informe l'utilisateur de l'erreur
+      console.log(err)
+      res
+        .status(500)
+        .send('Erreur lors de la suppression des film inactif')
+    } else {
+      // Si tout s'est bien passé, on envoie un statut "ok".
+      res.sendStatus(200)
+    }
+  })
 })
 
 app.listen(port, err => {
